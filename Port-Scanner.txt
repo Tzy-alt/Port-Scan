@@ -1,0 +1,124 @@
+import socket
+import os
+import time
+
+# --- KONFIGURASI WARNA (ANSI) ---
+G = '033[92m'  # Hijau
+R = '033[91m'  # Merah
+Y = '033[93m'  # Kuning
+C = '033[96m'  # Cyan
+W = '033[0m'   # Reset
+B = '033[1m'   # Bold
+
+# --- PENGATURAN SISTEM ---
+ACCESS_CODE = ay2yxf4ab
+
+def clear_screen()
+    Membersihkan layar secara total di berbagai lingkungan terminal
+    if os.name == 'nt'
+        os.system('cls')
+    else
+        os.system('clear')
+    # Trik paksa bersih untuk terminal berbasis webIDE
+    print("\033[H\033[J", end="")
+
+def draw_banner()
+    Menampilkan identitas visual NEMESIS-X
+    print(f{C}{B} + =  55)
+    print(f
+    ███╗   ██╗███████╗███╗   ███╗███████╗███████╗██╗███████╗
+    ████╗  ██║██╔════╝████╗ ████║██╔════╝██╔════╝██║██╔════╝
+    ██╔██╗ ██║█████╗  ██╔████╔██║█████╗  ███████╗██║███████╗
+    ██║╚██╗██║██╔══╝  ██║╚██╔╝██║██╔══╝  ╚════██║██║╚════██║
+    ██║ ╚████║███████╗██║ ╚═╝ ██║███████╗███████║██║███████║
+    ╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝╚══════╝
+              {Y}[ PRESET NEMESIS-X PORT SCANNER ]{C}
+              {Y}[ Made By = TzyVXC From ERTK Team]{C}
+     + =  55 + f{W})
+
+def login()
+    Sistem autentikasi sebelum akses menu
+    clear_screen()
+    print(fn{B}=== NEMESIS-X SYSTEM ACCESS ==={W})
+    input_code = input(f{Y}Masukkan Access Code {W})
+    
+    if input_code == ACCESS_CODE
+        print(fn{G}[+] Akses Diterima. Mengautentikasi...{W})
+        time.sleep(1.5)
+        clear_screen() # Membersihkan layar segera setelah sukses login
+        return True
+    else
+        print(fn{R}[!] KODE SALAH. Akses Ditolak.{W})
+        time.sleep(2)
+        return False
+
+def scan_port(target, port)
+    Logika pengecekan port menggunakan socket
+    try
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.6) # Timeout seimbang antara akurasi dan kecepatan
+        result = s.connect_ex((target, port))
+        if result == 0
+            print(f  {G}[OPEN]{W} Port {B}{port}{W} terdeteksi terbuka)
+        s.close()
+    except Exception
+        pass
+
+def menu()
+    Pusat kendali operasional
+    while True
+        draw_banner()
+        print(f{B}MENU UTAMA{W})
+        print(f{C}1.{W} Scan Port Web Standar {Y}(80, 443, 21, 22){W})
+        print(f{C}2.{W} Scan Port Database {Y}(3306, 5432, 27017){W})
+        print(f{C}3.{W} Custom Scan {Y}(Tentukan Range){W})
+        print(f{C}4.{W} {R}Keluar{W})
+        print(f{C} + -  55 + f{W})
+        
+        pilihan = input(f{B}Pilih Menu (1-4) {W})
+        
+        if pilihan == '4'
+            print(f{R}Mematikan sistem...{W})
+            break
+            
+        target = input(fn{B}Masukkan DomainIP Target {W})
+        print(fn{Y}[~] Menghubungkan ke {target}...{W})
+        time.sleep(0.5)
+        print(f{Y}[~] Memulai Scanning...n{W})
+        
+        # Penentuan daftar port berdasarkan pilihan
+        if pilihan == '1'
+            ports = [21, 22, 80, 443, 8080]
+        elif pilihan == '2'
+            ports = [1433, 3306, 5432, 27017]
+        elif pilihan == '3'
+            try
+                start = int(input(f{Y}Port Awal {W}))
+                end = int(input(f{Y}Port Akhir {W}))
+                ports = range(start, end + 1)
+            except ValueError
+                print(f{R}Input harus angka!{W})
+                time.sleep(2)
+                clear_screen()
+                continue
+        else
+            print(f{R}Pilihan tidak tersedia.{W})
+            time.sleep(1)
+            clear_screen()
+            continue
+        
+        # Eksekusi scanning
+        for p in ports
+            scan_port(target, p)
+            
+        print(fn{G}--- Scan Selesai ---{W})
+        input(f{Y}Tekan Enter untuk kembali ke menu...{W})
+        clear_screen()
+
+# --- ENTRY POINT ---
+if __name__ == __main__
+    try
+        if login()
+            menu()
+    except KeyboardInterrupt
+        print(fn{R}[!] Program dihentikan paksa.{W})
